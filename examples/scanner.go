@@ -32,6 +32,12 @@ func main() {
 
 	fmt.Printf("device open: %s\n", dongle.String())
 
+	if err = dongle.EnableLNA(); err != nil {
+		fmt.Printf("error enabling LNA: %v\n", err)
+	} else {
+		fmt.Printf("LNA enabled\n")
+	}
+
 	if err = dongle.EnterPromiscMode(); err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
