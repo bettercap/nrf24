@@ -72,7 +72,7 @@ func main() {
 			fmt.Printf("error receiving payload: %v\n", err)
 		} else if buf[0] == 0 {
 			buf = buf[1:]
-			fmt.Printf("[%s] (channel %02d) : %x\n", address, ch, buf)
+			fmt.Printf("[%s] (channel %02d) : (%02d bytes) %x\n", address, ch, len(buf), buf)
 		}
 	}
 }
