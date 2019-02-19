@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/hex"
 	"flag"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/bettercap/nrf24"
@@ -23,31 +21,10 @@ func init() {
 	flag.Parse()
 }
 
-func convertAddress() (error, []byte) {
-	if address == "" {
-		return fmt.Errorf("no --address specified"), nil
-	}
-
-	clean := strings.Replace(address, ":", "", -1)
-	raw, err := hex.DecodeString(clean)
-	if err != nil {
-		return err, nil
-	} else if len(raw) != 5 {
-		return fmt.Errorf("address must be composed of 5 octets"), nil
-	}
-	// https://github.com/golang/go/wiki/SliceTricks
-	for i := len(raw)/2 - 1; i >= 0; i-- {
-		opp := len(raw) - 1 - i
-		raw[i], raw[opp] = raw[opp], raw[i]
-	}
-
-	return nil, raw
-}
-
 func main() {
 	fmt.Printf("nRF24LU1+ - RFStorm Sniffer\n\n")
 
-	if err, rawAddress = convertAddress(); err != nil {
+	if err, rawAddress = nrf24.ConvertAddress(address); err != nil {
 		fmt.Printf("%v\n", err)
 		return
 	}
@@ -73,13 +50,11 @@ func main() {
 
 	for {
 		if time.Since(lastPing) >= pingPeriod {
-			pinged := false
 			if err = dongle.TransmitPayload(pingPayload, 250, 1); err != nil {
-				for ch = 1; ch <= nrf24.TopChannel && !pinged; ch++ {
+				for ch = 1; ch <= nrf24.TopChannel; ch++ {
 					if err := dongle.SetChannel(ch); err != nil {
 						fmt.Printf("error setting channel %d: %v\n", ch, err)
 					} else if err = dongle.TransmitPayload(pingPayload, 250, 1); err == nil {
-						pinged = true
 						lastPing = time.Now()
 						break
 					}

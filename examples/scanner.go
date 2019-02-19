@@ -45,8 +45,7 @@ func main() {
 
 	for {
 		if time.Since(lastHop) >= hopPeriod {
-			chIndex++
-			ch = chIndex % nrf24.TopChannel
+			ch = nrf24.LoopChannels(&chIndex)
 			if err := dongle.SetChannel(ch); err != nil {
 				fmt.Printf("error setting channel %d: %v\n", ch, err)
 			} else {
