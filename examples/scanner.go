@@ -15,7 +15,7 @@ var (
 func address(raw []byte) string {
 	parts := []string{}
 	for _, b := range raw {
-		parts = append(parts, fmt.Sprintf("%X", b))
+		parts = append(parts, fmt.Sprintf("%02X", b))
 	}
 	return strings.Join(parts, ":")
 }
